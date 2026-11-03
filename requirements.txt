@@ -8,3 +8,5 @@ stable-baselines3[extra]
 tensorboard
 pyyaml
 jupyter
+lightning
+scikit-learn
