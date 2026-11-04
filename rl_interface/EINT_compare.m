@@ -15,6 +15,7 @@ g_noise = 0.1;                 % 0 without sensor noise, 0.1 for the nominal tes
 
 global USE_PID
 names = {'RL (SAC)', 'PID'};
+colors = {[0.85 0.33 0.10], [0.93 0.69 0.13]};   % same color per controller on both plots
 res = cell(1, 2);
 for k = 1:2
     USE_PID = (k == 2);        % false: RL policy, true: PID
@@ -32,7 +33,7 @@ plot(t, z_ref, 'k--', 'LineWidth', 1.2);
 txt = '';
 for k = 1:2
     L = res{k};
-    plot(L(:, 1), L(:, 2), 'LineWidth', 1.2);
+    plot(L(:, 1), L(:, 2), 'Color', colors{k}, 'LineWidth', 1.2);
     rmse = sqrt(mean((L(:, 6) - L(:, 2)).^2));
     txt = [txt, sprintf('%s: RMSE %.3f m   ', names{k}, rmse)];
     fprintf('%s: RMSE %.3f m, min z %.2f m\n', names{k}, rmse, min(L(:, 2)));
@@ -42,6 +43,6 @@ title(sprintf('g\\_noise = %g   |   %s', g_noise, txt));
 
 subplot(2, 1, 2); hold on; grid on;
 for k = 1:2
-    stairs(res{k}(:, 1), res{k}(:, 5));
+    stairs(res{k}(:, 1), res{k}(:, 5), 'Color', colors{k});
 end
 ylabel('u'); xlabel('t [s]'); legend(names, 'Location', 'best');

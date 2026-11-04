@@ -9,13 +9,15 @@ clear; close all; clc;
 here = fileparts(mfilename('fullpath'));
 cd(here);
 addpath(here, fullfile(here, '..', 'matlab'));
+global USE_PID
+USE_PID = false;               % make sure rl_controller.m flies the RL policy, not the PID
 
 check_controller(here);
 
 random_init;                   % noise seeds
 Ts = 0.05;
 T_end = 10;
-g_noise = 0;                 % 0 to start, 0.1 for tuning, higher to test robustness
+g_noise = 0.1;                 % 0 to start, 0.1 for tuning, higher to test robustness
 
 clear rl_controller
 out = sim('EINT_RL_closed_loop');
