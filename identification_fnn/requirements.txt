@@ -1,0 +1,10 @@
+# Python 3.10-3.12 (NOT 3.13: torch 2.2.2 has no 3.13 wheels).
+# torch 2.2.2 is the last release for Intel Macs (x86_64) and needs numpy < 2.
+# All wheels checked available on Windows x64, macOS x86_64 and macOS arm64.
+# stable-baselines3 >= 2.5 needs torch >= 2.3: 2.4.1 is the newest compatible (for the RL part).
+torch==2.2.2
+numpy==1.26.4
+pandas==2.2.3
+matplotlib==3.9.4
+PyYAML==6.0.3
+jupyter            # to run identification_fnn.ipynb

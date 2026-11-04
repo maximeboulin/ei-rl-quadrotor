@@ -1,0 +1,32 @@
+# FNN identification of the quadrotor vertical dynamics. Paths are relative to this folder.
+#
+# WORKING HYPOTHESES (not verified, to confirm with step 1 / EINT_system_simulation.slx):
+#   H1  input = normalized thrust command u in [-1, 1]; output = vertical acceleration az [m/s^2], z up
+#   H2  CSV already sampled at Ts = 0.05 s -> one row = one trajectory of 2000 samples = 100 s
+#   H3  data generated without ground contact: ground / platform must be handled in env.py
+#   H4  CSV column k = sample at t = k*Ts, with u[k] held on [t_k, t_k+1) (same convention as Simulink)
+seed: 0
+Ts: 0.05
+
+data:
+  input_csv: data/bdd_in_mat_05.csv      # local copy, not versioned (~105 MB each)
+  output_csv: data/bdd_out_mat_05.csv
+  tmp_cleaning:                          # TEMPORARY until the step-2 code is available
+    known_bad_rows: [122, 455, 1233, 1677]
+    az_abs_max: 40.0                     # m/s^2, valid data lies in about [-30, 11]
+    frozen_min_len: 5                    # identical consecutive samples = stuck sensor
+  split: {train: 0.70, val: 0.15, test: 0.15}   # by whole trajectory
+
+fnn:                  # retained model: az[k+1] = f(az[k], u[k])
+  hidden: [64, 64]
+  activation: tanh
+  lr: 1.0e-3
+  batch_size: 1024
+  compare_epochs: 3   # training length used to compare the candidate inputs
+  n_epochs: 6         # learning curve of the retained model (epochs 1..6)
+  model_path: model/fnn.pt
+
+eval:
+  horizon: 200        # free-run length: 10 s = duration of the mission
+  n_windows: 2000     # random free-run windows (validation for the comparison, test for the final check)
+  plot_start_s: 15.0  # start of the plotted segment
