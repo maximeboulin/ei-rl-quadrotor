@@ -10,6 +10,7 @@ TS = 0.05          # sampling period [s]
 N_STEPS = 200      # 10 s mission
 PLATFORM_Z = 0.0   # drone starts on the platform
 GROUND_Z = -0.25   # ground level once the car has left
+U_MIN, U_MAX = 0.0, 0.8   # command range, centred near hover (u ≈ 0.38)
 
 
 def mission(t):
@@ -45,7 +46,7 @@ class DroneEnv(gym.Env):
         self.noise = noise
 
         # 2. What the agent can do, and what it sees
-        self.action_space = spaces.Box(-1.0, 1.0, shape=(1,), dtype=np.float32)
+        self.action_space = spaces.Box(U_MIN, U_MAX, shape=(1,), dtype=np.float32)
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(5,), dtype=np.float32)
 
     # ---- helpers ----
@@ -80,7 +81,7 @@ class DroneEnv(gym.Env):
         return self._observation(m), {"m": m}
 
     def step(self, action):
-        u = float(np.clip(action[0], -1, 1))
+        u = float(np.clip(action[0], U_MIN, U_MAX))
 
         # 1. The model predicts the acceleration
         az = self._lstm_step(u)
@@ -98,10 +99,11 @@ class DroneEnv(gym.Env):
         if self.z < floor:
             self.z, self.vz = floor, max(self.vz, 0.0)
 
-        # 4. Reward: follow the reference, smoothly
+        # 4. Reward: 1 on the reference, decreasing quickly away from it
         z_ref = mission(self.t + TS)
         e = z_ref - self.z
-        reward = -(e**2 + 0.1 * self.vz**2 + 0.01 * (u - self.u_prev)**2)
+        reward = np.exp(-(e / 0.15)**2) - 0.05 * min(self.vz**2, 4) - 0.05 * (u - self.u_prev)**2
+        terminated = abs(e) > 2          # drone lost: end the episode
 
         # 5. Advance time
         self.u_prev, self.az_prev = u, az
@@ -109,4 +111,4 @@ class DroneEnv(gym.Env):
         self.t = self.k * TS
         truncated = self.k >= N_STEPS
         m = self._measurements()
-        return self._observation(m), reward, False, truncated, {"m": m}
+        return self._observation(m), float(reward), terminated, truncated, {"m": m}
