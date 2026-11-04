@@ -8,9 +8,8 @@ from gymnasium import spaces
 
 TS = 0.05          # sampling period [s]
 N_STEPS = 200      # 10 s mission
-PLATFORM_Z = 0.0   # drone starts on the platform
-GROUND_Z = -0.25   # ground level once the car has left
-U_MIN, U_MAX = 0.0, 0.8   # command range, centred near hover (u ≈ 0.38)
+U_MIN, U_MAX = 0.0, 0.8   # command range, centred near hover (u ≈ 0.385)
+I_MAX = 1.0        # bound on the error integral (anti-windup)
 
 
 def mission(t):
@@ -34,7 +33,7 @@ class LSTMModel(nn.Module):
 class DroneEnv(gym.Env):
 
     def __init__(self, model_path="models/lstm_az.ckpt",
-                 scaler_path="models/lstm_az_scaler.json", noise=0.0):
+                 scaler_path="models/lstm_az_scaler.json", randomize=True):
         super().__init__()
         # 1. Load the identified model
         ckpt = torch.load(model_path, map_location="cpu", weights_only=False)
@@ -43,11 +42,11 @@ class DroneEnv(gym.Env):
         self.model.eval()
         scaler = json.load(open(scaler_path))
         self.a_min, self.a_max = scaler["a_min"], scaler["a_max"]
-        self.noise = noise
+        self.randomize = randomize          # True for training, False for the export
 
         # 2. What the agent can do, and what it sees
         self.action_space = spaces.Box(U_MIN, U_MAX, shape=(1,), dtype=np.float32)
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(5,), dtype=np.float32)
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
 
     # ---- helpers ----
     def _lstm_step(self, u):
@@ -63,49 +62,46 @@ class DroneEnv(gym.Env):
                 "z_ref": mission(self.t), "u_prev": self.u_prev}
 
     def _observation(self, m):
+        """Called exactly once per reset()/step(), like observation() in rl_controller.m."""
+        self.I = float(np.clip(self.I + TS * (m["z_ref"] - m["z"]), -I_MAX, I_MAX))
         return np.array([m["z_ref"] - m["z"], m["vz"], m["az_prev"] / 10,
-                         m["u_prev"], m["z_ref"]], dtype=np.float32)
+                         m["u_prev"], m["z_ref"], self.I], dtype=np.float32)
 
     # ---- Gymnasium API ----
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.k, self.t = 0, 0.0
-        self.z, self.vz = PLATFORM_Z, 0.0
-        self.u_prev, self.az_prev = 0.0, -9.81
-        self.took_off = False
+        self.z, self.vz = 0.0, 0.0
+        self.u_prev, self.az_prev = 0.0, 0.0     # Delay_u and Delay_az start at 0 in Simulink
+        self.I = 0.0                             # error integral
+        # Model error for this flight: constant bias on a_z (domain randomization)
+        self.bias = self.np_random.uniform(-1.0, 1.0) if self.randomize else 0.0
         # Warm-up: 40 steps at u = 0, like the start of every experiment in the data
         self.hc = None
         for _ in range(40):
-            self.az_prev = self._lstm_step(0.0)
+            self._lstm_step(0.0)
         m = self._measurements()
         return self._observation(m), {"m": m}
 
     def step(self, action):
         u = float(np.clip(action[0], U_MIN, U_MAX))
 
-        # 1. The model predicts the acceleration
-        az = self._lstm_step(u)
-        if self.noise > 0:
-            az += self.noise * self.np_random.normal()
+        # 1. The model predicts the acceleration (+ model error and noise during training)
+        az = self._lstm_step(u) + self.bias
+        if self.randomize:
+            az += 0.1 * self.np_random.normal()
 
-        # 2. Integrate: acceleration -> velocity -> altitude
+        # 2. Integrate: acceleration -> velocity -> altitude (no ground: UAV_model.slx has none)
         self.vz += TS * az
         self.z += TS * self.vz
 
-        # 3. Contact with the platform, then with the ground
-        if self.z > PLATFORM_Z + 0.05:
-            self.took_off = True
-        floor = GROUND_Z if self.took_off else PLATFORM_Z
-        if self.z < floor:
-            self.z, self.vz = floor, max(self.vz, 0.0)
-
-        # 4. Reward: 1 on the reference, decreasing quickly away from it
+        # 3. Reward: 1 on the reference, decreasing quickly away from it
         z_ref = mission(self.t + TS)
         e = z_ref - self.z
-        reward = np.exp(-(e / 0.15)**2) - 0.05 * min(self.vz**2, 4) - 0.05 * (u - self.u_prev)**2
+        reward = np.exp(-(e / 0.15)**2) - 0.05 * min(self.vz**2, 4) - 0.2 * (u - self.u_prev)**2
         terminated = abs(e) > 2          # drone lost: end the episode
 
-        # 5. Advance time
+        # 4. Advance time
         self.u_prev, self.az_prev = u, az
         self.k += 1
         self.t = self.k * TS
