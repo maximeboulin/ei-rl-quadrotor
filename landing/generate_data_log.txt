@@ -1,0 +1,24 @@
+25 / 500 experiments  (1 s elapsed, about 20 s left)
+50 / 500 experiments  (2 s elapsed, about 19 s left)
+75 / 500 experiments  (3 s elapsed, about 18 s left)
+100 / 500 experiments  (4 s elapsed, about 17 s left)
+125 / 500 experiments  (5 s elapsed, about 16 s left)
+150 / 500 experiments  (6 s elapsed, about 15 s left)
+175 / 500 experiments  (7 s elapsed, about 14 s left)
+200 / 500 experiments  (8 s elapsed, about 13 s left)
+225 / 500 experiments  (9 s elapsed, about 12 s left)
+250 / 500 experiments  (10 s elapsed, about 10 s left)
+275 / 500 experiments  (12 s elapsed, about 9 s left)
+300 / 500 experiments  (13 s elapsed, about 8 s left)
+325 / 500 experiments  (14 s elapsed, about 7 s left)
+350 / 500 experiments  (15 s elapsed, about 6 s left)
+375 / 500 experiments  (16 s elapsed, about 5 s left)
+400 / 500 experiments  (17 s elapsed, about 4 s left)
+425 / 500 experiments  (18 s elapsed, about 3 s left)
+450 / 500 experiments  (19 s elapsed, about 2 s left)
+475 / 500 experiments  (20 s elapsed, about 1 s left)
+500 / 500 experiments  (21 s elapsed, about 0 s left)
+Experiments where the drone lost control (|angle| > 1 rad): 0 / 500
+Saved /Users/AlbanDERUE/Documents/CS/2A/Data Driven Control/EI/ei-rl-quadrotor/landing/../data/raw/landing_data.mat
+U_common range [0.285, 0.485], U_diff range [-0.093, 0.084]
+theta range [-0.466, 0.383] rad, ax range [-3.96, 4.25], az range [-2.67, 2.20] m/s^2
