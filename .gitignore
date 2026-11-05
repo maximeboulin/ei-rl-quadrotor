@@ -39,3 +39,5 @@ Thumbs.db
 # Raw datasets: > 100 MB each, too big for GitHub; every member keeps a local copy
 data/raw/*.csv
 
+data/raw/*.mat
+data/raw/*.npz

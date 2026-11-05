@@ -1,0 +1,11 @@
+Step B: max |z_simulink - z_plant| = 0.0900 m over 201 steps
+
+Step A: motor i at u_hover + 0.05, the 3 others at u_hover, during 1 s
+motor       phi (roll) theta (pitch)     psi (yaw)             x             y             z
+u1              0.0338       -1.4486        0.7246       -0.8287       -0.2354       -0.1624
+u2              1.4486       -0.0338       -0.7246       -0.2331       -0.8300       -0.1624
+u3             -0.0338        1.4486        0.7246        0.8287        0.2354       -0.1624
+u4             -1.4486        0.0338       -0.7246        0.2331        0.8300       -0.1624
+
+Reference: all 4 motors at u_hover during 1 s
+all             0.0000        0.0000        0.0000        0.0000        0.0000       -0.0111
