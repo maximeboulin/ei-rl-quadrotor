@@ -1,7 +1,7 @@
 """Gymnasium environment (2D axis): land the drone on a moving car.
 The drone (with its attitude PD) is simulated by the identified LSTM (U_common, theta_cmd) -> (a_x, a_z, theta).
 Hybrid control: the SAC agent gives theta_cmd (horizontal tracking of the car); a classical altitude law
-(descent_law, identical in landing/eval_landing.m) gives U_common and descends once the drone is aligned."""
+(descent_law, identical in 05_landing_car/lstm_2d/eval_landing.m) gives U_common and descends once the drone is aligned."""
 import json
 import numpy as np
 import torch
@@ -18,7 +18,7 @@ DTH_MAX = 0.02                # max change of the pitch reference per step (0.4 
 Z0 = 0.5                      # initial height above the platform [m]
 I_MAX = 1.0                   # bound on the error integral (anti-windup)
 
-# Car scenario: the car already drives at constant speed, ahead of the drone (landing/car_motion.m)
+# Car scenario: the car already drives at constant speed, ahead of the drone (05_landing_car/lstm_2d/car_motion.m)
 CAR_V, CAR_X0 = 1.0, 0.75          # nominal speed [m/s] and initial lead [m] (no randomization)
 CAR_V_RANGE, CAR_X0_RANGE = (0.5, 1.5), (0.5, 1.0)   # randomized at each episode during training
 
@@ -54,7 +54,7 @@ def car_motion(t, v_car=CAR_V, x0=CAR_X0):
 
 
 class LSTMModel(nn.Module):
-    """Same layers as model_nn in 05_landing_lstm.ipynb, without Lightning."""
+    """Same layers as model_nn in 05_landing_car/lstm_2d/05_landing_lstm.ipynb, without Lightning."""
     def __init__(self, hidden_size=64):
         super().__init__()
         self.rnn = nn.LSTM(input_size=2, hidden_size=hidden_size, batch_first=True)
