@@ -1,0 +1,22 @@
+SAC car 0.5 m/s seed 1: landed 1 at t =  7.95 s | x - x_car = -0.054 m | vz = -0.18 m/s | vx - v_car = -0.11 m/s -> true
+SAC car 0.5 m/s seed 2: landed 1 at t =  6.80 s | x - x_car = -0.071 m | vz = -0.17 m/s | vx - v_car = -0.10 m/s -> true
+SAC car 0.5 m/s seed 3: landed 0 at t = 15.00 s | x - x_car = +0.099 m | vz = -0.01 m/s | vx - v_car = -0.49 m/s -> false
+SAC car 1.0 m/s seed 1: landed 1 at t =  6.95 s | x - x_car = +0.047 m | vz = -0.16 m/s | vx - v_car = -0.07 m/s -> true
+SAC car 1.0 m/s seed 2: landed 1 at t =  7.05 s | x - x_car = +0.020 m | vz = -0.17 m/s | vx - v_car = +0.00 m/s -> true
+SAC car 1.0 m/s seed 3: landed 1 at t =  7.55 s | x - x_car = +0.134 m | vz = -0.17 m/s | vx - v_car = +0.03 m/s -> false
+SAC car 1.5 m/s seed 1: landed 1 at t =  7.40 s | x - x_car = +0.216 m | vz = -0.18 m/s | vx - v_car = +0.00 m/s -> false
+SAC car 1.5 m/s seed 2: landed 0 at t = 15.00 s | x - x_car = +0.261 m | vz = +0.02 m/s | vx - v_car = -0.05 m/s -> false
+SAC car 1.5 m/s seed 3: landed 0 at t = 15.00 s | x - x_car = +0.188 m | vz = -0.01 m/s | vx - v_car = +0.17 m/s -> false
+SAC: 4 / 9 successful landings
+
+PID car 0.5 m/s seed 1: landed 1 at t =  9.05 s | x - x_car = -0.019 m | vz = -0.18 m/s | vx - v_car = +0.04 m/s -> true
+PID car 0.5 m/s seed 2: landed 1 at t =  7.75 s | x - x_car = -0.005 m | vz = -0.17 m/s | vx - v_car = -0.04 m/s -> true
+PID car 0.5 m/s seed 3: landed 1 at t =  8.95 s | x - x_car = -0.015 m | vz = -0.16 m/s | vx - v_car = +0.00 m/s -> true
+PID car 1.0 m/s seed 1: landed 1 at t = 13.95 s | x - x_car = +0.007 m | vz = -0.15 m/s | vx - v_car = -0.01 m/s -> true
+PID car 1.0 m/s seed 2: landed 1 at t = 12.65 s | x - x_car = -0.007 m | vz = -0.17 m/s | vx - v_car = +0.00 m/s -> true
+PID car 1.0 m/s seed 3: landed 1 at t = 12.70 s | x - x_car = +0.009 m | vz = -0.17 m/s | vx - v_car = +0.04 m/s -> true
+PID car 1.5 m/s seed 1: landed 1 at t = 13.45 s | x - x_car = -0.013 m | vz = -0.17 m/s | vx - v_car = +0.02 m/s -> true
+PID car 1.5 m/s seed 2: landed 1 at t = 12.85 s | x - x_car = -0.016 m | vz = -0.18 m/s | vx - v_car = -0.01 m/s -> true
+PID car 1.5 m/s seed 3: landed 1 at t = 13.30 s | x - x_car = -0.008 m | vz = -0.17 m/s | vx - v_car = -0.02 m/s -> true
+PID: 9 / 9 successful landings
+
