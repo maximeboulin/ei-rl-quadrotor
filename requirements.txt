@@ -10,3 +10,4 @@ pyyaml
 jupyter
 lightning
 scikit-learn
+control        # ARX scripts (02_identification/arx)
